@@ -146,8 +146,8 @@ classdef test_app < matlab.unittest.TestCase
             % script. If in the future, the directory is changed. Please
             % remove this and map to a different directory. We should no
             % longer be using p4 anyway.
-            ImportLib("test_cfg/import_local.json");
             ImportLib("test_cfg/import_p4.json");
+            ImportLib("test_cfg/import_local.json");
             global magit
 
             %% Test Local

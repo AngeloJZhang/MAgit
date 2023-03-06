@@ -32,6 +32,9 @@ classdef ImportLib < handle
         % This contains the reference structure for the import configs.
         ref_struct (1, 1) struct;
 
+        % This contains the workspace information.
+        workspace_struct (1, 1) struct;
+
     end % properties
 
     methods (Access = public)
@@ -48,7 +51,7 @@ classdef ImportLib < handle
             end % arguments
 
             % Attempt to load in the configuration.
-            obj.ref_struct = ImportLib.load_config(path_to_config);
+            [obj.ref_struct, obj.workspace_struct] = ImportLib.load_config(path_to_config);
 
             %% Validate Reference Structure
             if isequal(obj.ref_struct, struct())
@@ -73,6 +76,9 @@ classdef ImportLib < handle
                 base_names = fieldnames(base_import);
                 new_names = fieldnames(new_import);
                 new_import_libs = setdiff(new_names, base_names);
+
+                % Set in the original workspace structure.
+                obj.workspace_struct = magit.workspace_struct;
 
                 % No new imports found.
                 if isempty(new_import_libs)
@@ -105,24 +111,28 @@ classdef ImportLib < handle
                     % Case Bitbucket is a special case of git
                     case "bitbucket"
 
-                        % Skip Bitbucket if token does not exist
-                        if ~exist(lib_struct.http_token, "file")
-                            warning("\n\nCannot find http_token file : %s . Skipping\n\n", ...
-                                lib_struct.http_token)
-                            continue;
+                        % Look for field "bb_token".
+                        if ~isfield(obj.workspace_struct, "bb_token")
+                            error("Require bb_token field for bitbucket.");
 
                         end % if
 
-                        fid = fopen(lib_struct.http_token, "r");
+                        % Error if token does not exist.
+                        if ~exist(obj.workspace_struct.bb_token, "file")
+                            error("Cannot find http_token file : %s.", ...
+                                obj.workspace_struct.http_token);
 
-                        % Create the regexp required for this:
-                        main_url_exp = ["(.*)(?:projects)(.*)(?:browse)", ...
-                            "$1rest/api/latest/$2$3archive?format=zip"];
+                        end % if
 
-                        [~, lib_path] = ImportLib.git_fetch(lib_struct.url, ...
+                        % Grab the token
+                        fid = fopen(obj.workspace_struct.bb_token, "r");
+                        token = fgetl(fid);
+                        fclose(fid);
+
+                        [~, lib_path] = ImportLib.bb_fetch(lib_struct.url, ...
+                            lib, ...
                             commit=lib_struct.commit, ...
-                            main_url_exp=commit_url_exp, ...
-                            repo_name=lib);
+                            token=token);
 
                     % Local library typically means that the folder should
                     % not be cleaned up after the fact.
@@ -140,6 +150,7 @@ classdef ImportLib < handle
                         % and then clean it up after the fact.
                     case "git"
 
+                        % TODO : Apply GIT Token
                         [~, lib_path] = ImportLib.git_fetch(lib_struct.url, ...
                             commit=lib_struct.commit, ...
                             repo_name=lib);
@@ -148,7 +159,13 @@ classdef ImportLib < handle
                         % everytime and leave it for later.
                     case "p4"
 
-                        lib_path = ImportLib.p4_check(lib_struct.base_path, ...
+                        % Look for field "base_path".
+                        if ~isfield(obj.workspace_struct, "p4_path")
+                            error("Require p4_path field in config for Perforce.");
+
+                        end % if
+
+                        lib_path = ImportLib.p4_check(obj.workspace_struct.p4_path, ...
                             lib_struct.url);
 
                         % Invalid Library type found. Add to this switch case
@@ -216,8 +233,9 @@ classdef ImportLib < handle
         % Defining Static Functions Here.
         % Realistically, the inputs should also be defined, however, this
         % will be a TODO item for a later update.
+        [repo_name, lib_path] = bb_fetch();
         [repo_name, lib_path] = git_fetch();
-        ref_struct = load_config();
+        [ref_struct, workspace_struct] = load_config();
         lib_path = p4_check();
         new_import_obj = combine();
 

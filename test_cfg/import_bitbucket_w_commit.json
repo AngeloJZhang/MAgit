@@ -9,7 +9,7 @@
       "imports": {
 
         "matlabsdms" : {
-            "commit": "",
+            "commit": "f67c86dbbcd6405c6f24ec3c3d7d1e65bd54dc30",
             "lib_type": "bitbucket",
             "url": "https://engbb.srcinc.com/projects/SDMS/repos/matlab-api/browse"
             }

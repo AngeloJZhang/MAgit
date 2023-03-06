@@ -15,7 +15,6 @@
 
         "tracker_test" :{
             "lib_type": "p4",
-            "base_path": "C:\Users\azhang\p4rep\PC-AZHANG",
             "url": "//tracker_irad/MAIN/analysis/hypothesis/"
             },
 
@@ -24,5 +23,8 @@
             "url": "https://github.com/AngeloJZhang/MatlabPluginPattern",
             "commit": ""
             }
+      },
+      "workspace": {
+          "p4_path": "C:\Users\azhang\p4rep\PC-AZHANG"
       }
 }

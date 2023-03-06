@@ -1,4 +1,4 @@
-classdef test_app < matlab.unittest.TestCase
+classdef test_app_tokens < matlab.unittest.TestCase
     % ==========================================================================
     %  This is the test file for MAgit. This particular file handles token
     %  authentication for GIT and Bitbucket. This is seperated out so that
@@ -17,40 +17,60 @@ classdef test_app < matlab.unittest.TestCase
         end % function
 
     end % methods
-    
+
     methods(Test)
-        
+
         % Test Methods
 
-        function ImportGit(testCase)
+        function ImportBitBucket(testCase)
             % ==================================================================
             %  This function tests loading bitbucket config.
             % ==================================================================
 
-            % This is really gross. The objective here is go to get to your
-            % C:/<user_name> directory. That is because this should be
-            % where your .ssh folder should be with the key that a lets you
-            % access bitbucket.
-            fileparts(fileparts(userpath))
-
-            ImportLib("test_cfg/import_git.json");
+            ImportLib("test_cfg/import_bitbucket.json");
             global magit
-            import(magit.MatlabPluginPattern)
-            testCase.assertNotEmpty(which("Application"));
+            import(magit.matlabsdms)
+            testCase.assertNotEmpty(which("RemoteCKAN"));
 
             % Make sure that the library was pulled in.
             % Exist doesn't give back a logical for whatever reason.
-            testCase.assertTrue(exist(fullfile(tempdir, 'MatlabPluginPattern'), "dir") == 7);
+            testCase.assertTrue(exist(fullfile(tempdir, 'matlabsdms'), "dir") == 7);
 
             % Clear PathGuard
-            clear MatlabPluginPattern_path_guard
+            clear matlabsdms_path_guard
 
             % Clear ImportLib
             clear ans
             clearvars -global magit
 
             % Make sure that the library was cleared out.
-            testCase.assertTrue(exist(fullfile(tempdir, 'MatlabPluginPattern'), "dir") == 0);
+            testCase.assertTrue(exist(fullfile(tempdir, 'matlabsdms'), "dir") == 0);
+
+        end % function
+
+        function ImportBitBucketWithCommit(testCase)
+            % ==================================================================
+            %  This function tests loading bitbucket config.
+            % ==================================================================
+
+            ImportLib("test_cfg/import_bitbucket.json");
+            global magit
+            import(magit.matlabsdms)
+            testCase.assertNotEmpty(which("RemoteCKAN"));
+
+            % Make sure that the library was pulled in.
+            % Exist doesn't give back a logical for whatever reason.
+            testCase.assertTrue(exist(fullfile(tempdir, 'matlabsdms'), "dir") == 7);
+
+            % Clear PathGuard
+            clear matlabsdms_path_guard
+
+            % Clear ImportLib
+            clear ans
+            clearvars -global magit
+
+            % Make sure that the library was cleared out.
+            testCase.assertTrue(exist(fullfile(tempdir, 'matlabsdms'), "dir") == 0);
 
         end % function
 
