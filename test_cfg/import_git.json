@@ -1,0 +1,17 @@
+# The following configuration file is a test configuration and acts as a guide
+# for how to create your own configuration. Each of the values here represent
+# a function block that is transfered to the factory to create the correct
+# action in the chain. See the README.md for more details.
+{
+    #
+    # The import field designates <url or path>, <location type>, <commit / versioning>
+    # this tells the tool, where to import from.
+      "imports": {
+
+        "MatlabPluginPattern" :{
+            "lib_type": "git",
+            "url": "https://github.com/AngeloJZhang/MatlabPluginPattern",
+            "commit": ""
+            }
+      }
+}
