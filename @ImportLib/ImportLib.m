@@ -50,6 +50,9 @@ classdef ImportLib < handle
 
             end % arguments
 
+            % Set the path of ImportLib
+            addpath(fileparts(fileparts(mfilename("fullpath"))));
+
             % Attempt to load in the configuration.
             [obj.ref_struct, obj.workspace_struct] = ImportLib.load_config(path_to_config);
 

@@ -72,6 +72,29 @@ else
     fprintf("[INFO] Using GIT main ...\n");
     full_url = regexprep(git_url, opts.main_url_exp(1), opts.main_url_exp(2));
 
+    % There is a chance if a git branch is long standing, they haven't
+    % switch from then outdated "master" branch to "main".
+    % Here we perform a check.
+
+    try
+        webread(full_url, webopt_obj);
+
+    catch
+        fprintf("[WARNING] Could not find main branch : %s\n", full_url)
+        full_url = strrep(full_url, "main", "master");
+
+    end % try
+
+    % Attempt the 'master' path.
+    try
+        fprintf("[INFO] Attempting 'master' branch : %s\n", full_url);
+        webread(full_url, webopt_obj);
+
+    catch MatlabException
+        rethrow(MatlabException);
+        
+    end % try
+
 end % if
 
 % Attempt to pull data
@@ -79,14 +102,14 @@ try
     fprintf('[INFO] Download started ...\n');
     websave(zip_path, full_url, webopt_obj);
 
-catch ME
-    rethrow(ME);
+catch MatlabException
+    rethrow(MatlabException);
 
 end % try
 
 if ~exist(zip_path, "file")
     error("Empty GIT repository : %s", full_url);
-    
+
 end % if
 
 fprintf("[INFO] Unzipping : %s\n", git_url);
@@ -118,10 +141,12 @@ fprintf("[INFO] Deleted zip file...\n");
 
 dir_path = fullfile(opts.tempdir, dirname);
 
-% Create the new directory name.
+% Create the new directory name. This is based on whether or not a repo
+% name is provided. If used in the MAgit library, a repo name is always
+% provided.
 if ~strcmp(opts.repo_name, "")
     new_filepath = fullfile(opts.tempdir, opts.repo_name);
-    
+
     % Set the repo_name if manually created
     repo_name = opts.repo_name;
 
@@ -132,7 +157,7 @@ else
 
     % Set the repo_name if automatically created
     repo_name = new_dirname;
-
+	
 end % if
 
 fprintf("[INFO] Changing name to match HEAD...\n");
