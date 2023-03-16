@@ -20,6 +20,9 @@ classdef ImportLib < handle
         % This field points to the import config
         IMPORT_CFG = "import_cfg.json"
 
+        % This field points to the workspace config
+        WORKSPACE_CFG = "workspace.json"
+
     end % properties
 
     %% Private Variables
@@ -38,7 +41,7 @@ classdef ImportLib < handle
     end % properties
 
     methods (Access = public)
-        function obj = ImportLib(path_to_config)
+        function obj = ImportLib(path_to_config, opts)
             % ==================================================================
             %  Constructor
             % ==================================================================
@@ -48,13 +51,18 @@ classdef ImportLib < handle
                 % the linking configuration of your data.
                 path_to_config (1, 1) string {mustBeFile} = ImportLib.IMPORT_CFG
 
+                % This path_to_workspace contains the path to the json config that holds
+                % the workspace configuration of your data.
+                opts.path_to_workspace (1, 1) string {mustBeFile} = ImportLib.WORKSPACE_CFG
+
             end % arguments
 
             % Set the path of ImportLib
             addpath(fileparts(fileparts(mfilename("fullpath"))));
 
-            % Attempt to load in the configuration.
-            [obj.ref_struct, obj.workspace_struct] = ImportLib.load_config(path_to_config);
+            % Attempt to load in the configurations.
+            obj.ref_struct = ImportLib.load_config(path_to_config);
+            obj.workspace_struct = ImportLib.load_config(opts.path_to_workspace);
 
             %% Validate Reference Structure
             if isequal(obj.ref_struct, struct())
@@ -121,21 +129,16 @@ classdef ImportLib < handle
                         end % if
 
                         % Error if token does not exist.
-                        if ~exist(obj.workspace_struct.bb_token, "file")
-                            error("Cannot find http_token file : %s.", ...
-                                obj.workspace_struct.http_token);
+                        if ~isfield(obj.workspace_struct, "bb_token")
+                            error("The existing workspace does not contain field 'bb_token'." ...
+                                + " Refresh the object if the workspace has been updated.");
 
                         end % if
-
-                        % Grab the token
-                        fid = fopen(obj.workspace_struct.bb_token, "r");
-                        token = fgetl(fid);
-                        fclose(fid);
 
                         [~, lib_path] = ImportLib.bb_fetch(lib_struct.url, ...
                             lib, ...
                             commit=lib_struct.commit, ...
-                            token=token);
+                            token=obj.workspace_struct.bb_token);
 
                     % Local library typically means that the folder should
                     % not be cleaned up after the fact.
@@ -164,7 +167,8 @@ classdef ImportLib < handle
 
                         % Look for field "base_path".
                         if ~isfield(obj.workspace_struct, "p4_path")
-                            error("Require p4_path field in config for Perforce.");
+                            error("The existing workspace does not contain field 'p4_path'." ...
+                                + " Refresh the object if the workspace has been updated.");
 
                         end % if
 

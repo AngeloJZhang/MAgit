@@ -1,20 +1,23 @@
 # The following configuration file is a test configuration and acts as a guide
-# for how to create your own configuration. Each of the values here represent
-# a function block that is transfered to the factory to create the correct
-# action in the chain. See the README.md for more details.
+# for how to create your own configuration. This file handles the information
+# necessary to identify you imports and their specific revisions.
 {
     #
-    # The import field designates <url or path>, <location type>, <commit / versioning>
-    # this tells the tool, where to import from.
-      "imports": {
-
-        "matlabsdms" : {
-            "commit": "",
-            "lib_type": "bitbucket",
-            "url": "https://engbb.srcinc.com/projects/SDMS/repos/matlab-api/browse"
-            }
-      },
-      "workspace": {
-          "bb_token": "http_token.txt"
-      }
+    # The following name is what MaGIT uses for its reference for this library.
+    # i.e., to import this library call, "import(magit.matlabsdms)"
+    #
+    "matlabsdms" : {
+        #
+        # The commit number specifies the version number. Empty means latest.
+        #
+        "commit": "",
+        #
+        # lib_type tells you what repository to look at.
+        #
+        "lib_type": "bitbucket",
+        #
+        # url is a copy of the path whatever it maybe.
+        #
+        "url": "https://engbb.srcinc.com/projects/SDMS/repos/matlab-api/browse"
+    }
 }

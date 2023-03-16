@@ -1,0 +1,13 @@
+# The following configuration file is a test configuration and acts as a guide
+# for how to create your own configuration. This file shows how a sample workspace
+# file would be setup.
+{
+    #
+    # bb_token is the designated BitBucket Token
+    #
+    "bb_token" : "<insert token here>",
+    #
+    # p4_path is the perforce path to your workspace
+    #
+    "p4_path" : "c:\Users\azhang\p4rep\azhang_PC-AZHANG_367\"
+}

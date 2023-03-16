@@ -24,7 +24,7 @@ arguments
     % The commit value to specify a particular version of the repository
     opts.commit (1, 1) string = ""
 
-    % The temperorary dir to store files
+    % The temp dir to store files
     opts.tempdir (1, 1) string = tempdir()
 
     % This variables adjusts the commit access. "<commit>" is the
@@ -114,6 +114,6 @@ fprintf("[INFO] Deleted zip file...\n");
 % Set path to directory
 loc_dest = dir_path;
 
-fprintf("[INFO] Successful Fetch : %s\n.", git_url);
+fprintf("[INFO] Successful Fetch : %s\n", git_url);
 
 end % function
